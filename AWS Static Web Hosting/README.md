@@ -5,6 +5,8 @@ This project demonstrates how to host a static website using AWS S3.
 Login to your AWS account
 
 Search S3 in search bar > Click on Services > Buckets
+
+!(https://github.com/Zayan9484/AWS-Projects/blob/main/AWS%20Static%20Web%20Hosting/images/AWS-1.png)
  
 Create a bucket.
  
