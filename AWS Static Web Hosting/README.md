@@ -6,7 +6,7 @@ Login to your AWS account
 
 Search S3 in search bar > Click on Services > Buckets
 
-! [Step 1] (https://github.com/Zayan9484/AWS-Projects/blob/main/AWS%20Static%20Web%20Hosting/images/AWS-1.png?raw=true)
+![Step 1](https://github.com/Zayan9484/AWS-Projects/blob/main/AWS%20Static%20Web%20Hosting/images/AWS-1.png?raw=true)
  
 Create a bucket.
  
