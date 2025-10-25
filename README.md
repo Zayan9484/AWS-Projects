@@ -1,2 +1,2 @@
 # AWS-Projects
-This repository contains 3 beginner friendly AWS projects
+This repository contains beginner friendly AWS projects
