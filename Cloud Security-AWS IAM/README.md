@@ -145,8 +145,7 @@ The banner is telling us this because we're not authorized! We don't have permis
 
 Let’s stop the development instance and see if we can stop it.
  
- 
-Here we can see our development instance has been stopped.
+ 	Here we can see our development instance has been stopped.
 
 
 
