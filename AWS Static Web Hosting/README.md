@@ -30,5 +30,5 @@ When you copy and paste this URL in your browser, it will give your error messag
 
 - Your website will be loaded.
  
-
+# Open this [pdf](https://github.com/Zayan9484/AWS-Projects/blob/main/AWS%20Static%20Web%20Hosting/AWS%20Static%20Web%20Hosting.pdf) for detailed notes with screenshots of each step
 
