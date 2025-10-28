@@ -137,7 +137,9 @@ The banner is telling us this because we're not authorized! We don't have permis
 
 Let’s stop the development instance and see if we can stop it.
  
- 	Here we can see our development instance has been stopped.
+We can see our development instance has been stopped.
+
+# Open this [pdf](https://github.com/Zayan9484/AWS-Projects/blob/main/Cloud%20Security-AWS%20IAM/Cloud%20Security%20with%20AWS%20IAM.pdf) for detailed notes with screenshots of each step
 
 
 
