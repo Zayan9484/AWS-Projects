@@ -4,7 +4,7 @@
 
 This project documents a hands-on AWS lab I completed in 2023 to understand how a static website can be hosted directly from Amazon S3.
 
-The main objective was to create an S3 bucket, upload a web page, enable static website hosting, resolve an initial access issue, and verify that the site could be reached through the S3 website endpoint.
+The objective was to create an S3 bucket, upload a web page, enable static website hosting, resolve an initial access issue, and verify that the site could be reached through the S3 website endpoint.
 
 ## What I Implemented
 
@@ -14,7 +14,7 @@ The main objective was to create an S3 bucket, upload a web page, enable static 
 - Enabled **Static website hosting** and configured the index document.
 - Adjusted the access settings required for this public website lab.
 - Validated the final website through the S3 website endpoint.
-- Documented the process with screenshots.
+- Documented the implementation with screenshots.
 
 ## Architecture
 
@@ -44,7 +44,7 @@ Static Web Content
 
 - [Implementation walkthrough](./docs/implementation.md)
 - [Validation and troubleshooting](./docs/validation-and-troubleshooting.md)
-- [Screenshots](./screenshots/)
+- [Screenshot evidence index](./screenshots/README.md)
 - [Original 2023 lab notes](./docs/original-lab-notes.pdf)
 
 ## Security Note
@@ -55,4 +55,4 @@ For a production website today, I would normally evaluate a design using **Cloud
 
 ## Status
 
-**Completed** — static website successfully hosted and validated in the lab environment.
+**Completed** - static website successfully hosted and validated in the lab environment.

@@ -52,7 +52,7 @@ Development EC2      Production EC2
 - [Access model](./docs/access-model.md)
 - [Implementation walkthrough](./docs/implementation.md)
 - [Validation results](./docs/validation.md)
-- [Screenshots](./screenshots/)
+- [Screenshot evidence index](./screenshots/README.md)
 - [Original 2023 lab notes](./docs/original-lab-notes.pdf)
 
 ## Important Documentation Note
@@ -67,4 +67,4 @@ IAM users were appropriate for this learning exercise. For workforce access in a
 
 ## Status
 
-**Completed** — restricted access was tested successfully against separate development and production EC2 resources.
+**Completed** - restricted access was tested successfully against separate development and production EC2 resources.
