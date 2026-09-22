@@ -1,70 +1,104 @@
-# AWS IAM Least-Privilege Access Control Lab
+# AWS IAM Tag-Based EC2 Access Control
 
-## Overview
+I created two EC2 instances, assigned a custom policy to `DevGroup`, added `user1`, and tested the user's ability to stop each instance from the AWS console.
 
-This project documents a hands-on AWS IAM lab I completed in 2023.
+**Observed result:** stopping the production instance was denied; the development instance reached **Stopped** while production remained **Running**.
 
-The goal was to create separate **development** and **production** EC2 resources, assign restricted access to a test IAM user through a user group and custom policy, and then verify that the user could perform an action on the development instance while the same action was denied on the production instance.
+## 1. Separate the resources
 
-## What I Implemented
-
-- Launched two EC2 instances to represent development and production environments.
-- Used resource labels/tags to distinguish the two environments.
-- Created a custom IAM policy for restricted EC2 access.
-- Created an IAM user group and attached the policy to the group.
-- Created a test IAM user and added the user to the restricted group.
-- Used an AWS account alias as part of the sign-in workflow.
-- Signed in as the restricted user and tested permissions.
-- Confirmed that the production EC2 action was denied.
-- Confirmed that the corresponding development EC2 action was allowed.
-- Documented the complete process with screenshots.
-
-## Access Model
+The development resource used this tag:
 
 ```text
-Test IAM User
-     |
-     v
-IAM User Group
-     |
-     v
-Custom IAM Policy
-     |
-     +--------------------+
-     |                    |
-     v                    v
-Development EC2      Production EC2
-   Allowed               Denied
+Key:   Env
+Value: development
 ```
 
-## AWS Concepts Practiced
+![Development resource tag](./screenshots/development-resource-tag.png)
 
-- IAM users and user groups
-- IAM policies
-- Least-privilege access
-- EC2
-- Resource tagging / environment separation
-- Authorization testing
-- Explicit validation of allowed and denied actions
+The two instances appeared as `myec2` (production test target) and `ec2_dev` (development).
 
-## Project Evidence
+![Both lab instances running before the test](./screenshots/two-running-ec2-instances.png)
 
-- [Access model](./docs/access-model.md)
-- [Implementation walkthrough](./docs/implementation.md)
-- [Validation results](./docs/validation.md)
-- [Screenshot evidence index](./screenshots/README.md)
-- [Original 2023 lab notes](./docs/original-lab-notes.pdf)
+## 2. Define the policy
 
-## Important Documentation Note
+The policy was named `DevEnv_policy`. Its JSON has been transcribed from the original policy-editor screenshot into [policies/development-ec2-lab-policy.json](./policies/development-ec2-lab-policy.json). Formatting is normalized and the outer JSON object is closed; the visible statements are preserved. This is a transcription, not an exported policy file or a newly deployed policy.
 
-The current repository does not retain the original IAM policy JSON as a standalone text file. I have therefore documented the access behavior that was actually tested rather than reconstructing or inventing policy code after the fact.
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/Env": "development"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ec2:Describe*",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "ec2:DeleteTags",
+        "ec2:CreateTags"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
 
-If the original policy file is recovered later, it can be added separately.
+![Original policy-editor evidence](./screenshots/tag-based-iam-policy.png)
 
-## Current Security Perspective
+| Statement | Purpose in this lab |
+|---|---|
+| Allow `ec2:*` with `ec2:ResourceTag/Env = development` | Condition access on the development tag |
+| Allow `ec2:Describe*` on `*` | Permit EC2 discovery, including visibility of the production instance |
+| Deny `ec2:CreateTags` and `ec2:DeleteTags` | Prevent this identity from changing tags used by the access rule |
 
-IAM users were appropriate for this learning exercise. For workforce access in a modern production environment, I would also evaluate AWS IAM Identity Center or federation, MFA, short-lived credentials, and tighter role-based access rather than relying on long-lived IAM user credentials.
+The policy explores access boundaries, but `ec2:*` is broad. It is not a claim of a minimal production policy or proof that every EC2 action supports this condition. The screenshots validate **StopInstances**, not every action.
 
-## Status
+## 3. Assign permissions through the group
 
-**Completed** - restricted access was tested successfully against separate development and production EC2 resources.
+I attached `DevEnv_policy` to `DevGroup`, then added `user1` to that group with console access.
+
+![Custom policy selected for the IAM group](./screenshots/group-policy-attachment.png)
+
+![Test user assigned to DevGroup](./screenshots/user-group-membership.png)
+
+The tests were performed after signing in as the restricted user, rather than from the administrator session.
+
+## 4. Test both sides of the boundary
+
+Console action: **EC2 → Instances → select instance → Instance state → Stop instance**.
+
+| Target | Action | Observed result |
+|---|---|---|
+| `myec2` — production | `ec2:StopInstances` | Authorization failure; instance remained running |
+| `ec2_dev` — development | `ec2:StopInstances` | Instance reached Stopped |
+
+![Production stop request denied](./screenshots/production-stop-denied.png)
+
+The error identifies `ec2:StopInstances` and says no identity-based policy allows it for the production resource. This is an absent matching Allow for that action, not the explicit tag-edit Deny in the policy.
+
+![Development stopped while production remains running](./screenshots/development-stopped-production-running.png)
+
+Being able to see a resource did not mean the user could stop it. The separate Describe permission explains why both instances remained visible.
+
+## Scope and evidence
+
+This was a console-based training lab. No CLI execution or infrastructure-as-code deployment is claimed. The policy transcription was checked as JSON and against the screenshot, but has not been redeployed in AWS as part of this documentation update.
+
+- [Access model and policy limitations](./docs/access-model.md)
+- [Implementation](./docs/implementation.md)
+- [Validation](./docs/validation.md)
+- [All 37 original screenshots](./screenshots/README.md)
+- [Original lab notes](./docs/original-lab-notes.pdf)
+
+The group-creation screenshot contains an August 2025 date. This documentation does not assign the lab to the earlier training year.

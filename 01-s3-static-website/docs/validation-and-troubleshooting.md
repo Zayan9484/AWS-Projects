@@ -1,35 +1,22 @@
-# Validation and Troubleshooting
+# Validation and troubleshooting
 
-## Issue Observed
+## Observed failure
 
-The first browser test returned an access error after the website file had been uploaded to S3.
+The initial object request returned `AccessDenied`. Uploading the file had not made it anonymously readable.
 
-## Why It Happened
+## Resolution recorded
 
-Uploading an object to S3 does not automatically make it publicly readable or turn the bucket into a website.
+The lab changed public-access settings, enabled ACLs, and used **Make public using ACL** on `index.html`. The subsequent browser screenshot shows the page loading from its S3 object URL.
 
-The lab still required:
+Static website hosting is a separate feature. An object URL does not require that feature to serve an accessible object, so the initial error should not be attributed solely to disabled website hosting.
 
-1. static website hosting to be enabled;
-2. an index document to be configured; and
-3. public read access appropriate for the lab.
-
-## Resolution
-
-After configuring static website hosting and the required access settings, the S3 website endpoint was tested again.
-
-## Validation Result
-
-| Check | Result |
+| Check | Evidence-based result |
 |---|---|
-| Website file uploaded to S3 | Passed |
-| Static website hosting enabled | Passed |
-| Index document configured | Passed |
-| Website endpoint reachable | Passed |
-| Static page loaded in browser | Passed |
+| `index.html` uploaded | Visible in object details and bucket listing |
+| Initial access error | `AccessDenied` response captured |
+| ACL workflow | Ownership and object-action screenshots retained |
+| Page loads through object URL | Confirmed by final browser screenshot |
+| Static website hosting enabled | Described in notes; final enabled settings not captured |
+| Website endpoint tested successfully | Not demonstrated by retained screenshots |
 
-## What I Learned
-
-The useful part of this lab was not only hosting the page. It also showed why an S3 object URL, an S3 website endpoint, and object access permissions are separate concepts.
-
-The project screenshots are retained in chronological order in the [screenshots](../screenshots/) folder.
+[Inline evidence](../README.md) · [All screenshots](../screenshots/README.md)

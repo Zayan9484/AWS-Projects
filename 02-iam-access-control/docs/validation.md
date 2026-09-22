@@ -1,24 +1,11 @@
-# Validation Results
+# Validation results
 
-## Test Objective
-
-The lab was successful only if the restricted identity behaved differently against the two EC2 environments.
-
-## Result Matrix
-
-| Test | Expected | Observed |
+| Test as user1 | Observed | Evidence |
 |---|---|---|
-| Restricted user attempts the tested EC2 action on production | Denied | Denied |
-| Restricted user attempts the tested EC2 action on development | Allowed | Allowed |
+| View the instances | Both visible | [Initial list](../screenshots/two-running-ec2-instances.png) and final result |
+| Stop production (`myec2`) | Denied: no identity-based policy allows `ec2:StopInstances` | [Authorization failure](../screenshots/production-stop-denied.png) |
+| Stop development (`ec2_dev`) | Stopped; production remains Running | [Final states](../screenshots/development-stopped-production-running.png) |
 
-## Interpretation
+These observations support the tested StopInstances boundary. They do not prove all EC2 operations are correctly restricted, that tag-edit denial was separately tested, or that resources were later deleted.
 
-The validation showed that the IAM configuration enforced the intended separation between development and production for the tested action.
-
-The key lesson was that IAM should be tested from the perspective of the actual restricted identity. Viewing a policy in the console is not enough to prove what a user can or cannot do.
-
-## Evidence
-
-The original screenshots are retained in chronological order in the [screenshots](../screenshots/) folder.
-
-They cover the EC2 setup, IAM policy/group/user configuration, sign-in process, and the final allowed/denied permission tests.
+The policy text added during documentation cleanup was transcribed from the policy screenshot and checked for valid JSON. This was not a fresh AWS deployment or a rerun of the original lab.

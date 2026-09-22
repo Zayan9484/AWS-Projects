@@ -1,49 +1,21 @@
-# Access Model
+# Access model
 
-## Objective
+`user1` inherits `DevEnv_policy` through `DevGroup`.
 
-The lab tested a simple least-privilege scenario:
-
-> A restricted user should be able to manage the development EC2 resource used in the exercise, but should not have the same permission against the production EC2 resource.
-
-## Components
-
-| Component | Purpose |
+| Policy element | Scope |
 |---|---|
-| Development EC2 instance | Resource the restricted user was intended to manage |
-| Production EC2 instance | Resource that should remain outside the user's permitted scope |
-| Custom IAM policy | Defined the restricted access used in the lab |
-| IAM user group | Central point for assigning the policy |
-| Test IAM user | Identity used to validate the effective permissions |
-| Resource tags / labels | Distinguished development from production resources |
+| Conditional Allow | `ec2:*`, resource `*`, condition `ec2:ResourceTag/Env` equals `development` |
+| Read visibility | `ec2:Describe*` on `*` |
+| Explicit Deny | `ec2:CreateTags` and `ec2:DeleteTags` on `*` |
 
-## Authorization Flow
+The development tag is part of the authorization boundary. Blocking tag edits prevents this test identity from changing that label through these EC2 actions.
 
-```text
-IAM User
-   |
-   v
-IAM Group
-   |
-   v
-Custom Policy
-   |
-   +--> Development EC2: expected action allowed
-   |
-   +--> Production EC2: same action denied
-```
+## What the tests establish
 
-## Why the Test Matters
+`ec2:StopInstances` failed for production and succeeded for development. Production remained visible because Describe permission was separately allowed. The production error states that no identity-based policy allowed StopInstances for that resource; it is not an explicit Deny of StopInstances.
 
-A policy is not validated simply because it can be created successfully.
+## Limits
 
-The useful part of this exercise was signing in as the restricted identity and checking both sides of the authorization boundary:
+`ec2:*` is broader than a policy limited to the tested stop action. Not every EC2 action has identical resource and condition support. This lab therefore demonstrates a tested tag-based boundary, not exhaustive least privilege across EC2. Tag-edit denial and other actions were not independently tested in the retained screenshots.
 
-- a permitted action should work; and
-- an out-of-scope action should fail.
-
-That provides practical evidence that the access model behaved differently for the two environments.
-
-## Historical Limitation
-
-The original policy JSON is not currently stored as a separate file in this repository, so this documentation does not attempt to recreate its exact statements, actions, or conditions.
+[Policy transcribed from screenshot](../policies/development-ec2-lab-policy.json) · [Policy image](../screenshots/tag-based-iam-policy.png)
